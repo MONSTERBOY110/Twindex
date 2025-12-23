@@ -1,9 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI
 from app.gemini_client import run_twindex
 from app.schemas import SimulationRequest, SimulationResponse
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = FastAPI(
     title="Twindex AI Backend",
