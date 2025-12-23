@@ -4,7 +4,7 @@ __pycache__/
 *.pyd
 *.pyc
 venv/
-.env/
+.env
 .env.local
 .DS_Store
 Thumbs.db
