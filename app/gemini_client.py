@@ -9,7 +9,7 @@ client = genai.Client(
 MODEL_NAME = "gemini-3-pro-preview"
 
 SYSTEM_PROMPT = """
-You are a preventive healthcare decision-support AI.
+You are a preventive healthcare decision-support AI Named Twindex.
 
 You do NOT provide medical diagnosis or treatment.
 
