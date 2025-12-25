@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Risk Simulator - Lifestyle Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ========================================================================
+           RESET & VARIABLES
+           ======================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --bg-light: #f9fafb;
+            --bg-surface: #ffffff;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #f8faff 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* ========================================================================
+           LAYOUT
+           ======================================================================== */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .disclaimer {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* ========================================================================
+           FORM STYLES
+           ======================================================================== */
+        .form-section {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group small {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .timeframe-display {
+            background: var(--primary-light);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* ========================================================================
+           BUTTONS
+           ======================================================================== */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        button {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-light);
+        }
+
+        /* ========================================================================
+           OUTPUT SECTION
+           ======================================================================== */
+        .output-section {
+            display: none;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .output-section.active {
+            display: block;
+        }
+
+        .output-card {
+            background: var(--bg-surface);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .output-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ========================================================================
+           RISK COMPARISON TABLE
+           ======================================================================== */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .risk-table thead {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .risk-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .risk-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .risk-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .risk-moderate {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .risk-high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .trend {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .trend-down {
+            color: var(--success-color);
+        }
+
+        .trend-up {
+            color: var(--danger-color);
+        }
+
+        .trend-stable {
+            color: var(--warning-color);
+        }
+
+        /* ========================================================================
+           RISK DRIVERS & RESULTS
+           ======================================================================== */
+        .risk-drivers {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .risk-drivers h4 {
+            font-size: 1rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .risk-drivers ul {
+            list-style: none;
+        }
+
+        .risk-drivers li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .risk-drivers li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .risk-change {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-left: 4px solid var(--success-color);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .risk-change p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-change-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success-color);
+        }
+
+        /* ========================================================================
+           EXPLANATION SECTION
+           ======================================================================== */
+        .explanation {
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .explanation h4 {
+            font-size: 1rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .explanation p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ========================================================================
+           SUMMARY BOX
+           ======================================================================== */
+        .summary-box {
+            background: linear-gradient(135deg, var(--primary-light) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border: 2px solid var(--primary-color);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .summary-box h3 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .summary-box p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* ========================================================================
+           ERROR & VALIDATION
+           ======================================================================== */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-group.error input,
+        .form-group.error select {
+            border-color: var(--danger-color);
+        }
+
+        /* ========================================================================
+           RESPONSIVE
+           ======================================================================== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .risk-table {
+                font-size: 0.9rem;
+            }
+
+            .risk-table th,
+            .risk-table td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Health Risk Simulator</h1>
+            <p>Lifestyle-Based Diabetes Risk Assessment</p>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            ⚠️ This is an educational simulation tool, not medical advice. Please consult healthcare professionals for actual diagnosis and treatment.
+        </div>
+
+        <!-- Main Form -->
+        <form id="simulationForm">
+            <!-- Patient Profile -->
+            <div class="form-section">
+                <h2 class="section-title">Patient Profile</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age (years)</label>
+                        <input type="number" id="age" name="age" min="18" max="120" placeholder="35" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bmi">BMI (Body Mass Index)</label>
+                        <input type="number" id="bmi" name="bmi" min="10" max="60" step="0.1" placeholder="24.5" required>
+                        <small>Weight (kg) ÷ Height² (m)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="familyHistory">Family History of Type 2 Diabetes</label>
+                        <select id="familyHistory" name="familyHistory" required>
+                            <option value="">Select...</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Baseline Lab Data -->
+            <div class="form-section">
+                <h2 class="section-title">Baseline Lab Data</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fastingGlucose">Fasting Glucose (mg/dL)</label>
+                        <input type="number" id="fastingGlucose" name="fastingGlucose" min="50" max="300" placeholder="100" required>
+                        <small>Normal: &lt; 100 mg/dL</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="hbA1c">HbA1c (%)</label>
+                        <input type="number" id="hbA1c" name="hbA1c" min="4" max="14" step="0.1" placeholder="5.5" required>
+                        <small>Normal: &lt; 5.7%</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Lifestyle -->
+            <div class="form-section">
+                <h2 class="section-title">Current Lifestyle</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sleep">Average Sleep (hours per night)</label>
+                        <input type="number" id="sleep" name="sleep" min="2" max="12" step="0.5" placeholder="6.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="dailySteps">Daily Steps</label>
+                        <input type="number" id="dailySteps" name="dailySteps" min="0" max="50000" placeholder="5000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sugarIntake">Sugar Intake</label>
+                        <select id="sugarIntake" name="sugarIntake" required>
+                            <option value="">Select...</option>
+                            <option value="low">Low</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stressLevel">Stress Level</label>
+                        <select id="stressLevel" name="stressLevel" required>
+                            <option value="">Select...</option>
+                            <option value="low">Low</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Timeframe -->
+            <div class="form-section">
+                <h2 class="section-title">Simulation Timeframe</h2>
+                <div class="timeframe-display">📅 9 Months</div>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Submit Buttons -->
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Run Simulation</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+            </div>
+        </form>
+
+        <!-- Output Section -->
+        <div class="output-section" id="outputSection">
+            <!-- Risk Comparison Table -->
+            <div class="output-card">
+                <h3 class="output-title">Risk Comparison Table</h3>
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th>Scenario</th>
+                            <th>Diabetes Risk Level</th>
+                            <th>HbA1c Trend</th>
+                            <th>Glucose Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riskTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Key Risk Drivers -->
+            <div class="output-card">
+                <div class="risk-drivers">
+                    <h4>Key Risk Drivers</h4>
+                    <ul id="riskDriversList">
+                        <!-- Populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Risk Change -->
+            <div class="output-card">
+                <div class="risk-change">
+                    <p>Estimated Risk Change (Current → Improved Lifestyle):</p>
+                    <div class="risk-change-value" id="riskChangeValue">-0%</div>
+                </div>
+            </div>
+
+            <!-- Cause → Effect Explanation -->
+            <div class="output-card">
+                <div class="explanation">
+                    <h4>How Lifestyle Affects Diabetes Risk</h4>
+                    <div id="explanationContent">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Summary -->
+            <div class="output-card">
+                <div class="summary-box">
+                    <h3>Simple Summary</h3>
+                    <div id="simpleSummary">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * SIMULATION ENGINE
+         * Rule-based mock logic for health risk assessment
+         */
+
+        // Risk calculation function
+        function calculateRisk(data) {
+            const baselineRisk = calculateBaselineRisk(data);
+            const scenarioA = {
+                name: "Scenario A (Current Lifestyle)",
+                sleep: parseFloat(data.sleep),
+                sugarIntake: data.sugarIntake,
+                dailySteps: parseInt(data.dailySteps),
+                stressLevel: data.stressLevel,
+            };
+
+            const scenarioB = {
+                name: "Scenario B (Improved Lifestyle)",
+                sleep: 7.5,
+                sugarIntake: reduceLevel(data.sugarIntake),
+                dailySteps: 8000,
+                stressLevel: "low",
+            };
+
+            const riskA = calculateScenarioRisk(baselineRisk, scenarioA, data);
+            const riskB = calculateScenarioRisk(baselineRisk, scenarioB, data);
+
+            return {
+                baseline: baselineRisk,
+                scenarioA: riskA,
+                scenarioB: riskB,
+                riskReduction: ((riskA.riskScore - riskB.riskScore) / riskA.riskScore * 100).toFixed(1),
+            };
+        }
+
+        function calculateBaselineRisk(data) {
+            let baseRisk = 20;
+
+            if (parseFloat(data.bmi) > 25) baseRisk += 15;
+            if (parseFloat(data.bmi) > 30) baseRisk += 15;
+            if (parseFloat(data.hbA1c) >= 5.7) baseRisk += 20;
+            if (parseInt(data.fastingGlucose) > 100) baseRisk += 15;
+            if (data.familyHistory === "yes") baseRisk += 20;
+            if (data.age > 45) baseRisk += 10;
+
+            return Math.min(baseRisk, 100);
+        }
+
+        function calculateScenarioRisk(baselineRisk, scenario, originalData) {
+            let adjustedRisk = baselineRisk;
+
+            // Sleep impact
+            if (scenario.sleep < 6) adjustedRisk += 15;
+            else if (scenario.sleep >= 7 && scenario.sleep <= 8) adjustedRisk -= 10;
+            else if (scenario.sleep > 8) adjustedRisk -= 5;
+
+            // Sugar intake impact
+            const sugarScores = { low: -15, moderate: -5, high: 15 };
+            adjustedRisk += sugarScores[scenario.sugarIntake] || 0;
+
+            // Daily steps impact
+            if (scenario.dailySteps < 3000) adjustedRisk += 20;
+            else if (scenario.dailySteps < 5000) adjustedRisk += 10;
+            else if (scenario.dailySteps >= 8000) adjustedRisk -= 15;
+            else if (scenario.dailySteps >= 10000) adjustedRisk -= 20;
+
+            // Stress impact
+            const stressScores = { low: -10, moderate: 0, high: 15 };
+            adjustedRisk += stressScores[scenario.stressLevel] || 0;
+
+            adjustedRisk = Math.max(10, Math.min(adjustedRisk, 100));
+
+            const riskLevel = adjustedRisk < 30 ? "Low" : adjustedRisk < 60 ? "Moderate" : "High";
+            const hbA1cTrend = calculateTrend(originalData.hbA1c, scenario.sugarIntake, scenario.sleep);
+            const glucoseTrend = calculateTrend(originalData.fastingGlucose, scenario.sugarIntake, scenario.sleep);
+
+            return {
+                riskScore: adjustedRisk,
+                riskLevel: riskLevel,
+                hbA1cTrend: hbA1cTrend,
+                glucoseTrend: glucoseTrend,
+            };
+        }
+
+        function calculateTrend(baseline, sugarIntake, sleep) {
+            let trend = 0;
+            if (sugarIntake === "low") trend -= 2;
+            else if (sugarIntake === "high") trend += 2;
+
+            if (sleep >= 7 && sleep <= 8) trend -= 1;
+            else if (sleep < 6) trend += 1;
+
+            if (trend < -0.5) return "↓";
+            if (trend > 0.5) return "↑";
+            return "Stable";
+        }
+
+        function reduceLevel(level) {
+            const levels = { high: "moderate", moderate: "low", low: "low" };
+            return levels[level] || level;
+        }
+
+        function getRiskBadgeClass(riskLevel) {
+            const riskClass = riskLevel.toLowerCase();
+            if (riskClass === "low") return "risk-low";
+            if (riskClass === "moderate") return "risk-moderate";
+            return "risk-high";
+        }
+
+        // Generate risk drivers
+        function generateRiskDrivers(data, results) {
+            const drivers = [];
+
+            if (parseFloat(data.bmi) > 30) drivers.push("Obesity (BMI > 30) significantly increases diabetes risk");
+            else if (parseFloat(data.bmi) > 25) drivers.push("Overweight status (BMI > 25) increases diabetes risk");
+
+            if (parseFloat(data.hbA1c) >= 5.7) drivers.push("Elevated HbA1c suggests prediabetic state");
+            if (parseInt(data.fastingGlucose) > 125) drivers.push("High fasting glucose levels indicate poor glucose control");
+
+            if (data.sugarIntake === "high") drivers.push("High sugar intake elevates blood glucose levels");
+            if (parseInt(data.dailySteps) < 5000) drivers.push("Sedentary lifestyle reduces insulin sensitivity");
+            if (parseFloat(data.sleep) < 6) drivers.push("Insufficient sleep impairs glucose metabolism");
+            if (data.stressLevel === "high") drivers.push("Chronic stress elevates cortisol, affecting blood sugar");
+            if (data.familyHistory === "yes") drivers.push("Family history of diabetes increases genetic predisposition");
+
+            return drivers.length > 0 ? drivers : ["Overall healthy lifestyle profile"];
+        }
+
+        // Format output
+        function displayResults(formData) {
+            const results = calculateRisk(formData);
+            const riskDrivers = generateRiskDrivers(formData, results);
+
+            // Populate Risk Table
+            const tableBody = document.getElementById("riskTableBody");
+            tableBody.innerHTML = `
+                <tr>
+                    <td><strong>Scenario A</strong><br><small>(Current)</small></td>
+                    <td><span class="risk-badge ${getRiskBadgeClass(results.scenarioA.riskLevel)}">${results.scenarioA.riskLevel}</span></td>
+                    <td><span class="trend ${results.scenarioA.hbA1cTrend === '↓' ? 'trend-down' : results.scenarioA.hbA1cTrend === '↑' ? 'trend-up' : 'trend-stable'}">${results.scenarioA.hbA1cTrend}</span></td>
+                    <td><span class="trend ${results.scenarioA.glucoseTrend === '↓' ? 'trend-down' : results.scenarioA.glucoseTrend === '↑' ? 'trend-up' : 'trend-stable'}">${results.scenarioA.glucoseTrend}</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Scenario B</strong><br><small>(Improved)</small></td>
+                    <td><span class="risk-badge ${getRiskBadgeClass(results.scenarioB.riskLevel)}">${results.scenarioB.riskLevel}</span></td>
+                    <td><span class="trend ${results.scenarioB.hbA1cTrend === '↓' ? 'trend-down' : results.scenarioB.hbA1cTrend === '↑' ? 'trend-up' : 'trend-stable'}">${results.scenarioB.hbA1cTrend}</span></td>
+                    <td><span class="trend ${results.scenarioB.glucoseTrend === '↓' ? 'trend-down' : results.scenarioB.glucoseTrend === '↑' ? 'trend-up' : 'trend-stable'}">${results.scenarioB.glucoseTrend}</span></td>
+                </tr>
+            `;
+
+            // Populate Risk Drivers
+            const driversList = document.getElementById("riskDriversList");
+            driversList.innerHTML = riskDrivers.map(driver => `<li>${driver}</li>`).join("");
+
+            // Populate Risk Change
+            const riskChangeValue = document.getElementById("riskChangeValue");
+            riskChangeValue.textContent = `${results.riskReduction > 0 ? '-' : '+'} ${Math.abs(results.riskReduction)}% relative risk reduction`;
+            riskChangeValue.style.color = results.riskReduction > 0 ? "var(--success-color)" : "var(--danger-color)";
+
+            // Populate Explanation
+            const explanationContent = document.getElementById("explanationContent");
+            explanationContent.innerHTML = `
+                <p><strong>🛌 Sleep:</strong> Getting 7-9 hours improves insulin sensitivity and reduces blood sugar spikes. Poor sleep increases cortisol and reduces glucose control.</p>
+                <p><strong>🍬 Sugar Intake:</strong> High sugar consumption directly elevates blood glucose and HbA1c. Reducing sugar helps stabilize glucose levels and improves insulin sensitivity.</p>
+                <p><strong>👟 Physical Activity:</strong> Regular movement (8,000+ steps) increases muscle glucose uptake and improves insulin sensitivity. Sedentary lifestyle increases diabetes risk.</p>
+                <p><strong>😌 Stress:</strong> Chronic stress raises cortisol, which elevates fasting glucose and promotes insulin resistance. Managing stress helps maintain healthy glucose levels.</p>
+            `;
+
+            // Populate Simple Summary
+            const simpleSummary = document.getElementById("simpleSummary");
+            const summaryText = results.riskReduction > 20 
+                ? `Great news! By improving your sleep to 7.5 hours, reducing sugar, and walking 8,000 steps daily, you could reduce your diabetes risk by <strong>${results.riskReduction}%</strong>. That's like getting a big health boost!`
+                : results.riskReduction > 0
+                ? `Good! Small changes in lifestyle could reduce your diabetes risk by <strong>${results.riskReduction}%</strong>. Every bit helps!`
+                : `Your current lifestyle shows a moderate risk. Making improvements in sleep, activity, and sugar intake could help protect your health.`;
+
+            simpleSummary.innerHTML = `<p>${summaryText}</p>`;
+
+            // Show output section
+            document.getElementById("outputSection").classList.add("active");
+            document.getElementById("outputSection").scrollIntoView({ behavior: "smooth" });
+
+            // Log data for backend integration
+            console.log("Simulation Results:", {
+                formData: formData,
+                results: results,
+                riskDrivers: riskDrivers,
+            });
+
+            /* BACKEND FETCH EXAMPLE - Uncomment to use:
+            const payload = {
+                patientData: formData,
+                simulationResults: results,
+                riskFactors: riskDrivers,
+            };
+
+            fetch('http://127.0.0.1:8000/simulate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Backend response:', data);
+            })
+            .catch(error => {
+                console.error('Backend error:', error);
+                alert('Error connecting to backend');
+            });
+            */
+        }
+
+        // Form validation
+        function validateForm(formData) {
+            if (!formData.name || formData.name.trim() === "") {
+                return "Please enter your name";
+            }
+            if (!formData.age || formData.age < 18 || formData.age > 120) {
+                return "Please enter a valid age (18-120)";
+            }
+            if (!formData.gender) {
+                return "Please select your gender";
+            }
+            if (!formData.bmi || formData.bmi < 10 || formData.bmi > 60) {
+                return "Please enter a valid BMI";
+            }
+            if (!formData.familyHistory) {
+                return "Please indicate family history";
+            }
+            if (!formData.fastingGlucose || formData.fastingGlucose < 50 || formData.fastingGlucose > 300) {
+                return "Please enter a valid fasting glucose value";
+            }
+            if (!formData.hbA1c || formData.hbA1c < 4 || formData.hbA1c > 14) {
+                return "Please enter a valid HbA1c value";
+            }
+            if (!formData.sleep || formData.sleep < 2 || formData.sleep > 12) {
+                return "Please enter valid sleep hours";
+            }
+            if (!formData.dailySteps || formData.dailySteps < 0 || formData.dailySteps > 50000) {
+                return "Please enter valid daily steps";
+            }
+            if (!formData.sugarIntake) {
+                return "Please select sugar intake level";
+            }
+            if (!formData.stressLevel) {
+                return "Please select stress level";
+            }
+            return null;
+        }
+
+        // Form submission
+        document.getElementById("simulationForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            const errorMessage = validateForm(data);
+            const errorDiv = document.getElementById("errorMessage");
+
+            if (errorMessage) {
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.add("show");
+            } else {
+                errorDiv.classList.remove("show");
+                displayResults(data);
+            }
+        });
+    </script>
+</body>
+</html>

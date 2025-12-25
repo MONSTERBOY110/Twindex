@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from app.gemini_client import run_twindex
 from app.schemas import SimulationRequest, SimulationResponse
 import logging
@@ -13,6 +14,15 @@ app = FastAPI(
     title="Twindex AI Backend",
     description="Gemini AI powered predictive health simulation engine",
     version="1.0.0"
+)
+
+# Enable CORS for frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (change for production)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.post("/simulate", response_model=SimulationResponse)
