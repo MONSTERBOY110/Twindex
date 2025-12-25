@@ -1,13 +1,27 @@
 import os
 import logging
 from google import genai
-from google.genai import types
-from google.genai import errors
+from google.genai import types, errors
 
 logger = logging.getLogger(__name__)
 
 
 def run_twindex(user_input: str) -> str:
+    # -------------------------------
+    # DEMO / FALLBACK MODE (IMPORTANT)
+    # -------------------------------
+    if os.getenv("DISABLE_GEMINI") == "1":
+        return (
+            "[DEMO MODE]\n"
+            "This is a simulated AI response.\n\n"
+            f"Input received:\n{user_input}\n\n"
+            "Risk trajectories and explanations would be generated here "
+            "once Gemini credits are enabled."
+        )
+
+    # -------------------------------
+    # REAL GEMINI MODE
+    # -------------------------------
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY not found in environment variables")
@@ -27,13 +41,14 @@ def run_twindex(user_input: str) -> str:
                 temperature=0.2,
                 system_instruction=(
                     "You are a preventive healthcare decision-support AI.\n"
-                    "You do NOT provide medical diagnosis or treatment.\n"
-                    "You simulate future health risk trajectories based on lifestyle inputs.\n\n"
+                    "You do NOT provide medical diagnosis or treatment.\n\n"
+                    "Your role is to simulate future health risk trajectories "
+                    "based on lifestyle inputs.\n\n"
                     "Rules:\n"
                     "- Compare multiple future scenarios over time\n"
                     "- Explain why risks increase or decrease\n"
                     "- Give only lifestyle-based, non-medical guidance\n"
-                    "- Educational, non-diagnostic output only"
+                    "- Output must be educational and non-diagnostic"
                 ),
             ),
         )
@@ -42,19 +57,24 @@ def run_twindex(user_input: str) -> str:
             return "No response generated."
 
         return response.text
-        
+
     except errors.ClientError as e:
-        # Handle specific API errors
         error_str = str(e)
+
         if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
-            logger.warning(f"Gemini API quota exceeded: {e}")
-            raise ValueError("API quota exceeded. Please try again later or upgrade your plan.")
-        elif "401" in error_str or "INVALID_ARGUMENT" in error_str:
+            logger.warning(f"Gemini quota exceeded: {e}")
+            raise ValueError(
+                "Gemini API quota exceeded. "
+                "Backend is healthy. Please enable credits to activate AI."
+            )
+
+        if "401" in error_str or "INVALID_ARGUMENT" in error_str:
             logger.error(f"Invalid API key or request: {e}")
-            raise ValueError("API authentication failed. Please check your API key.")
-        else:
-            logger.error(f"Gemini API error: {e}", exc_info=True)
-            raise ValueError(f"API error: {str(e)[:200]}")
+            raise ValueError("Gemini authentication failed. Check API key.")
+
+        logger.error("Unhandled Gemini API error", exc_info=True)
+        raise ValueError("Gemini API error occurred.")
+
     except Exception as e:
-        logger.error(f"Error calling Gemini API: {e}", exc_info=True)
-        raise ValueError(f"Failed to generate content: {str(e)[:200]}")
+        logger.error("Unexpected error calling Gemini", exc_info=True)
+        raise ValueError("AI generation failed due to server error.")
