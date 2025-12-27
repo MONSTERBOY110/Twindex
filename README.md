@@ -36,7 +36,7 @@ Twindex is an intelligent health analytics platform that uses AI to predict how 
 ### Step 1: Enter Your Health Profile
 Fill out your current health metrics, lifestyle habits, and lab values in an intuitive bento-style form.
 
-![Input Form](assets/input.png)
+![Input Form](/assets/Main%20Input.jpg)
 
 ### Step 2: Set Your Goals
 Define your target lifestyle changes over a specific timeframe (1-36 months).
