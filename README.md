@@ -255,42 +255,10 @@ docker run -p 8000:8000 twindex
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Areas for improvement:
-- Additional disease models
-- More lifestyle factors
-- Localization (multi-language support)
-- Mobile app version
-- Integration with health wearables
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License. See LICENSE file for details.
-
----
-
 ## 👥 Credits
 
 **Built By Tantriks - Subhojyoti Maity & Chandan Saha**
 
 Special thanks to:
 - Google Gemini API for AI capabilities
-- marked.js for markdown parsing
-- html2pdf.js for PDF export functionality
-- The open-source community
-
----
-
-## 📞 Support
-
-For issues, questions, or feature requests:
-- 📧 Email: support@tantriks.com
-- 🐛 Bug Reports: [GitHub Issues](#)
-- 💡 Feature Requests: [Discussions](#)
-
----
-
-**⭐ If you find Twindex helpful, please star this repository!**
+- Global GenAI Hackathon hosted by Machine Learning Kolkata
