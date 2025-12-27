@@ -44,17 +44,17 @@ Define your target lifestyle changes over a specific timeframe (1-36 months).
 ### Step 3: Get AI Analysis
 Receive a comprehensive health simulation showing risk trajectories for your current vs. improved lifestyle scenarios.
 
-![Output Report](assets/output.png)
+![Output Report](/assets/Output%20Result.jpg)
 
 ### Step 4: Ask Follow-up Questions
 Chat with the AI to ask context-aware questions about your specific report and get personalized answers.
 
-![Follow-up Chat](assets/followup_chat.png)
+![Follow-up Chat](/assets/Follow%20Up%20Chat.jpg)
 
 ### Step 5: Understand Global Context
 See how your risk patterns compare with globally prevalent health conditions.
 
-![Disease Context](assets/disease_context.png)
+![Disease Context](/assets/Disease%20Chance.jpg)
 
 ---
 
