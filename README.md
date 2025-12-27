@@ -6,6 +6,12 @@
 
 ---
 
+## Try Yourself
+
+https://twindex.vercel.app/
+
+---
+
 ## 🎯 What is Twindex?
 
 Twindex is an intelligent health analytics platform that uses AI to predict how lifestyle changes impact your health over time. Enter your current health metrics and target lifestyle goals, and get a personalized simulation showing how your risk profile evolves.
