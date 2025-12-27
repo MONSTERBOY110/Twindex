@@ -336,116 +336,58 @@ async function submitSimulation(event) {
 // ============================================================================
 function displayResults(rawOutput) {
     // Store raw output for debugging
-    document.getElementById('fullResponse').textContent = rawOutput;
+    const fullResponseEl = document.getElementById('fullResponse');
+    if (fullResponseEl) {
+        fullResponseEl.textContent = rawOutput;
+    }
 
-    // Parse output sections
-    const sections = parseOutput(rawOutput);
-
-    // Populate result cards
-    displayRiskTable(sections.riskComparison);
-    displayRiskDrivers(sections.riskDrivers);
-    displayRiskChange(sections.riskChange);
-    displayCauseEffect(sections.causeEffect);
-    displaySimpleSummary(sections.simpleSummary);
+    // Render the full markdown output
+    renderMarkdownCard(rawOutput);
 }
 
-function parseOutput(output) {
-    // Extract sections from the raw AI output
-    const sections = {
-        riskComparison: extractSection(output, 'Risk_Comparison_Table|Risk Comparison'),
-        riskDrivers: extractSection(output, 'Key_Risk_Drivers|Key Risk Drivers'),
-        riskChange: extractSection(output, 'Estimated_Risk_Change|Estimated Risk Change'),
-        causeEffect: extractSection(output, 'Cause.*Effect|Cause.*Effect'),
-        simpleSummary: extractSection(output, 'Simple_Summary|Simple Summary'),
-    };
+function renderMarkdownCard(markdownContent) {
+    const container = document.getElementById('resultsContainer');
+    container.innerHTML = ''; // Clear existing content
 
-    return sections;
+    // Create main card for formatted markdown
+    const card = document.createElement('div');
+    card.className = 'output-card output-card-summary';
+
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'output-card-title';
+    titleEl.textContent = '📋 Analysis Results';
+
+    const contentEl = document.createElement('div');
+    contentEl.className = 'output-card-content';
+    contentEl.innerHTML = marked.parse(markdownContent);
+
+    card.appendChild(titleEl);
+    card.appendChild(contentEl);
+    container.appendChild(card);
+
+    // Add full response debug card at the end
+    const debugCard = document.createElement('div');
+    debugCard.className = 'output-card output-card-debug';
+    debugCard.innerHTML = `
+        <details>
+            <summary>📋 View Raw Response</summary>
+            <pre id="fullResponse" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+        </details>
+    `;
+    container.appendChild(debugCard);
 }
 
-function extractSection(text, sectionPattern) {
-    if (!text || typeof text !== 'string') return 'No data available';
-    const regex = new RegExp(`${sectionPattern}[:\\n]*([\\s\\S]*?)(?=(^[A-Z_-]|$))`, 'im');
-    const match = text.match(regex);
-    return match && match[1] ? match[1].trim() : 'No data available';
-}
-
-function displayRiskTable(content) {
-    const tableDiv = document.getElementById('riskTable');
-    tableDiv.innerHTML = formatMarkdown(content);
-}
-
-function displayRiskDrivers(content) {
-    const driversDiv = document.getElementById('riskDrivers');
-    driversDiv.innerHTML = formatMarkdown(content);
-}
-
-function displayRiskChange(content) {
-    const changeDiv = document.getElementById('riskChange');
-    changeDiv.innerHTML = formatMarkdown(content);
-}
-
-function displayCauseEffect(content) {
-    const causeDiv = document.getElementById('causeEffect');
-    causeDiv.innerHTML = formatMarkdown(content);
-}
-
-function displaySimpleSummary(content) {
-    const summaryDiv = document.getElementById('simpleSummary');
-    summaryDiv.innerHTML = formatMarkdown(content);
+function formatContent(text) {
+    if (!text || typeof text !== 'string') return '<p>No data available</p>';
+    return marked.parse(text);
 }
 
 // ============================================================================
 // MARKDOWN-STYLE FORMATTING
 // ============================================================================
 function formatMarkdown(text) {
-    if (!text || typeof text !== 'string') return '<p>No data available</p>';
-
-    let html = text;
-
-    // Escape HTML
-    html = escapeHtml(html);
-
-    // Convert markdown tables (pipe-separated)
-    html = html.replace(/\|(.+)\|/g, (match) => {
-        const rows = match.split('\n').filter(r => r.includes('|'));
-        if (rows.length === 0) return match;
-
-        let table = '<table>';
-        rows.forEach((row, index) => {
-            const cells = row.split('|').slice(1, -1).map(c => c.trim());
-            const tag = index === 0 ? 'th' : 'td';
-            table += `<tr>${cells.map(c => `<${tag}>${c}</${tag}>`).join('')}</tr>`;
-        });
-        table += '</table>';
-        return table;
-    });
-
-    // Convert headings
-    html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
-    html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
-    html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
-
-    // Convert bold
-    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-
-    // Convert italic
-    html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    html = html.replace(/_(.+?)_/g, '<em>$1</em>');
-
-    // Convert lists
-    html = html.replace(/^\s*[-•*]\s+(.+)$/gm, '<li>$1</li>');
-    html = html.replace(/(<li>.*?<\/li>)/s, (match) => `<ul>${match}</ul>`);
-
-    // Convert line breaks to paragraphs
-    html = html.split('\n\n').map(p => {
-        if (p.includes('<h') || p.includes('<table') || p.includes('<ul') || p.includes('<li')) {
-            return p;
-        }
-        return p.trim() ? `<p>${p.trim()}</p>` : '';
-    }).join('');
-
-    return html;
+    // Legacy function - routes to new formatContent
+    return formatContent(text);
 }
 
 function escapeHtml(text) {
