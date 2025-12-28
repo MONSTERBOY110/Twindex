@@ -30,7 +30,7 @@ def run_twindex(user_input: str) -> str:
         client = genai.Client(api_key=api_key)
 
         response = client.models.generate_content(
-            model="gemini-3-pro-preview",
+            model="gemini-2.0-flash",
             contents=[
                 types.Content(
                     role="user",
@@ -38,18 +38,20 @@ def run_twindex(user_input: str) -> str:
                 )
             ],
             config=types.GenerateContentConfig(
-                temperature=0.2,
-                system_instruction=(
-                    "You are a preventive healthcare decision-support AI.\n"
-                    "You do NOT provide medical diagnosis or treatment.\n\n"
-                    "Your role is to simulate future health risk trajectories "
-                    "based on lifestyle inputs.\n\n"
-                    "Rules:\n"
-                    "- Compare multiple future scenarios over time\n"
-                    "- Explain why risks increase or decrease\n"
-                    "- Give only lifestyle-based, non-medical guidance\n"
-                    "- Output must be educational and non-diagnostic"
-                ),
+                  temperature=0.2,
+                  max_output_tokens=700,
+                  system_instruction=(
+                     "You are a preventive healthcare decision-support AI.\n"
+                     "You do NOT provide medical diagnosis or treatment.\n\n"
+                     "Your role is to simulate future health risk trajectories "
+                     "based on lifestyle inputs.\n\n"
+                     "Rules:\n"
+                     "- Use clear headings\n"
+                     "- Use bullet points\n"
+                     "- Keep explanations concise\n"
+                     "- Avoid unnecessary verbosity\n"
+                     "- Output must be educational and non-diagnostic"
+                     ),
             ),
         )
 
