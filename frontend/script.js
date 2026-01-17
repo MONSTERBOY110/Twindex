@@ -563,15 +563,32 @@ async function sendFollowupQuestion() {
 
         // If NO image uploaded - use JSON (original method)
         if (!uploadedImageFile) {
-            const followupPrompt = `You are continuing a discussion based strictly on the following generated health simulation report. Do not repeat the report. Answer only the user's question with clear cause-effect reasoning.
+            const followupPrompt = `You are a health insight assistant providing detailed, actionable guidance based on a health simulation report.
 
-PREVIOUS_REPORT:
+CONTEXT - HEALTH SIMULATION REPORT:
 ${storedReportContent}
 
-FOLLOW-UP_QUESTION:
+USER QUESTION:
 ${question}
 
-Answer concisely and focus directly on what the user asked. Use simple language.`;
+RESPONSE REQUIREMENTS:
+1. Answer the user's specific question with clear, cause-effect reasoning
+2. Provide 3-5 key insights or takeaways relevant to their question
+3. Include practical, actionable steps they can take
+4. Connect insights back to their health report where relevant
+5. Use simple, non-medical language
+6. Structure response with clear sections and bullet points for readability
+7. Add an "Impact Summary" showing how the answer connects to their diabetes/health risk
+8. Include relevant lifestyle factors affected by their question
+
+Format your response with:
+- Direct Answer to their question
+- Key Insights (3-5 numbered points)
+- Actionable Steps
+- Impact Summary
+- Relevant Risk Factors Affected
+
+Keep it informative but conversational.`;
 
             const payload = {
                 prompt: followupPrompt
@@ -586,21 +603,55 @@ Answer concisely and focus directly on what the user asked. Use simple language.
             });
         } else {
             // If image is uploaded - use FormData (multipart)
-            const followupPrompt = `You are a healthcare explanation assistant.
+            const followupPrompt = `You are a healthcare explanation assistant providing comprehensive, user-friendly prescription insights.
 You do not provide medical diagnosis or treatment.
 You only explain existing prescriptions in an educational manner.
 
-HEALTH_REPORT_CONTEXT:
+PATIENT HEALTH CONTEXT FROM REPORT:
 ${storedReportContent}
 
-USER_QUESTION:
-${question}
+USER QUESTION/CONTEXT:
+${question || "Please explain the prescription in this image"}
 
-NOTE: An image containing a prescription has been uploaded. 
-- Extract and explain what medicines are visible
-- Explain their purpose in simple language
-- Connect to the health report context
-- Provide lifestyle and educational guidance only
+TASK - PRESCRIPTION ANALYSIS:
+A prescription image has been uploaded. Provide a comprehensive explanation including:
+
+1. MEDICINE IDENTIFICATION
+   - List each medicine/medication visible
+   - Include dosage and frequency if visible
+
+2. PURPOSE & FUNCTION
+   - Explain what each medicine does in simple terms
+   - Connect to their health context from the report
+
+3. LIFESTYLE FACTORS
+   - How these medicines relate to sleep, diet, activity level
+   - Connection to their diabetes/health risk factors
+   - Complementary lifestyle changes recommended
+
+4. EDUCATIONAL INSIGHTS
+   - How do these medicines work together?
+   - Why might the doctor have prescribed this combination?
+   - General educational information about the condition being treated
+
+5. IMPORTANT REMINDERS
+   - Consistency and timing tips
+   - General lifestyle supportive measures
+   - When to consult the doctor about concerns
+
+RESPONSE FORMAT:
+- Use clear headings for each section
+- Use bullet points for readability
+- Explain in simple, non-medical language
+- Keep focus on education, not medical advice
+- Connect to their health simulation report
+- Include practical supportive recommendations
+
+DO NOT:
+- Change dosages or suggest new medicines
+- Provide medical diagnosis
+- Make treatment recommendations
+- Replace doctor consultation
 - Do NOT suggest dosage changes or new medicines
 - Do NOT diagnose or prescribe
 
