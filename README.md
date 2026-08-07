@@ -39,25 +39,27 @@ Twindex is an intelligent health analytics platform that uses AI to predict how 
 
 ## 🚀 How It Works
 
-### Step 1: Enter Your Health Profile
-Fill out your current health metrics, lifestyle habits, and lab values in an intuitive bento-style form.
+### Enter Your Health Profile & Set Your Goals
+Fill out your current health metrics, lifestyle habits, and lab values in an intuitive bento style form.
 
 ![Input Form](/assets/Main%20Input.jpg)
 
-### Step 2: Set Your Goals
-Define your target lifestyle changes over a specific timeframe (1-36 months).
-
-### Step 3: Get AI Analysis
-Receive a comprehensive health simulation showing risk trajectories for your current vs. improved lifestyle scenarios.
+### Get AI Analysis
+Receive a comprehensive health simulation showing risk trajectories for your current vs improved lifestyle scenarios.
 
 ![Output Report](/assets/Output%20Result.jpg)
 
-### Step 4: Ask Follow-up Questions
+### Ask Follow-up Questions
 Chat with the AI to ask context-aware questions about your specific report and get personalized answers.
 
 ![Follow-up Chat](/assets/Follow%20Up%20Chat.jpg)
 
-### Step 5: Understand Global Context
+### Upload Your Medical Report or Prescription
+Chat with the AI to ask context-aware questions about your medical reports, prescriptions, and generate insights from them.
+
+![Follow-up Chat](/assets/Prescription%20Upload.jpg)
+
+### Understand Global Context
 See how your risk patterns compare with globally prevalent health conditions.
 
 ![Disease Context](/assets/Disease%20Chance.jpg)
